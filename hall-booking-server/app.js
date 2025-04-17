@@ -110,23 +110,25 @@ const validateHallData = async (req, res, next) => {
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
-  console.log('authHeader', authHeader)
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).send("Unauthorized: Missing or invalid token");
   }
 
   const token = authHeader.split(" ")[1];
-  console.log('token', token)
 
-  jwt.verify(token, "MY_SECRET_TOKEN", (error, decoded) => {
-    if (error) {
-      return res.status(403).json({ error: "Forbidden: Invalid token" });
+  jwt.verify(
+    token,
+    process.env.JWT_TOKEN || "MY_SECRET_TOKEN",
+    (error, decoded) => {
+      if (error) {
+        return res.status(403).json({ error: "Forbidden: Invalid token" });
+      }
+
+      req.user = decoded;
+      next();
     }
-
-    req.user = decoded;
-    next();
-  });
+  );
 };
 
 app.post("/signup", async (req, res) => {
@@ -169,11 +171,9 @@ app.post("/signin", async (request, response) => {
       password,
       isUserExist.password
     );
+    const payload = { userId: isUserExist._id, email: isUserExist.email };
     if (isPasswordMatched) {
-      const token = jwt.sign(
-        { userId: isUserExist._id, email: isUserExist.email },
-        "MY_SECRET_TOKEN"
-      );
+      const token = jwt.sign(payload, process.env.JWT_TOKEN);
       response.status(200).send({ jwtToken: token, userId: isUserExist._id });
     } else {
       response.status(401).send({ errorMsg: "Incorrect password" });
@@ -190,7 +190,6 @@ app.post("/hall", validateHallData, authenticateToken, async (req, res) => {
   try {
     const collection = client.db("partyHalls").collection("halls");
     const hallDetails = req.body;
-    console.log('hallDetails', hallDetails)
 
     const { hallName } = hallDetails;
     const isHallExist = await collection.findOne({ hallName });
@@ -352,7 +351,7 @@ app.post("/booking", authenticateToken, async (req, res) => {
 
     res.status(200).send({
       message: "Booking Details Added Successfully",
-      bookings: addBookingQuery,
+      yourId: addBookingQuery.insertedId,
     });
   } catch (error) {
     console.error(error);
@@ -476,38 +475,6 @@ app.get("/api/filteredItems", async (req, res) => {
   } catch (error) {
     console.error("Error fetching filtered items:", error);
     res.status(500).send("Error fetching filtered items");
-  }
-});
-
-app.post("/mahal", async (req, res) => {
-  try {
-    const collection = client.db("partyHalls").collection("halls");
-    const mahalDetails = req.body;
-    console.log('mahalDetails', mahalDetails)
-
-    const { hallName } = mahalDetails;
-    const isHallExist = await collection.findOne({ hallName });
-
-    if (isHallExist) {
-      res.status(401).send({ errorMsg: "Hall Name already exists" });
-      return;
-    }
-
-    // Data with additional fields
-    const newHallData = {
-      ...mahalDetails,
-      cAt: new Date(),
-    };
-
-    // Insert the new hall data
-    const result = await collection.insertOne(newHallData);
-    res.status(200).json({
-      yourId: result.insertedId,
-      message: "Hall data added successfully",
-    });
-  } catch (error) {
-    console.error("Error adding hall data:", error);
-    res.status(500).send("Internal server error");
   }
 });
 
