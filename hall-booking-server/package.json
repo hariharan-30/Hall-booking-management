@@ -8,5 +8,8 @@
     "mongodb": "^6.15.0",
     "mongoose": "^8.12.1",
     "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

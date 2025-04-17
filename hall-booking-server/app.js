@@ -25,8 +25,8 @@ const initializeDBAndServer = async () => {
     await client.connect();
     console.log("Connected to MongoDB...");
 
-    app.listen(process.env.PORT || 5004, () => {
-      console.log("Server running on port 5004");
+    app.listen(process.env.PORT || 8000, () => {
+      console.log("Server running on port 8000");
     });
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
