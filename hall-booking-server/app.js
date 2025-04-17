@@ -25,7 +25,7 @@ const initializeDBAndServer = async () => {
     await client.connect();
     console.log("Connected to MongoDB...");
 
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT || 5004, () => {
       console.log("Server running on port 5004");
     });
   } catch (error) {
@@ -110,12 +110,14 @@ const validateHallData = async (req, res, next) => {
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
+  console.log('authHeader', authHeader)
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).send("Unauthorized: Missing or invalid token");
   }
 
   const token = authHeader.split(" ")[1];
+  console.log('token', token)
 
   jwt.verify(token, "MY_SECRET_TOKEN", (error, decoded) => {
     if (error) {
@@ -170,7 +172,7 @@ app.post("/signin", async (request, response) => {
     if (isPasswordMatched) {
       const token = jwt.sign(
         { userId: isUserExist._id, email: isUserExist.email },
-        process.env.JWT_SECRET
+        "MY_SECRET_TOKEN"
       );
       response.status(200).send({ jwtToken: token, userId: isUserExist._id });
     } else {
@@ -184,10 +186,11 @@ app.post("/signin", async (request, response) => {
 
 // API endpoint to add hall details with validation
 
-app.post("/hall", validateHallData, authenticateToken,  async (req, res) => {
+app.post("/hall", validateHallData, authenticateToken, async (req, res) => {
   try {
     const collection = client.db("partyHalls").collection("halls");
     const hallDetails = req.body;
+    console.log('hallDetails', hallDetails)
 
     const { hallName } = hallDetails;
     const isHallExist = await collection.findOne({ hallName });
@@ -476,10 +479,36 @@ app.get("/api/filteredItems", async (req, res) => {
   }
 });
 
+app.post("/mahal", async (req, res) => {
+  try {
+    const collection = client.db("partyHalls").collection("halls");
+    const mahalDetails = req.body;
+    console.log('mahalDetails', mahalDetails)
 
+    const { hallName } = mahalDetails;
+    const isHallExist = await collection.findOne({ hallName });
 
+    if (isHallExist) {
+      res.status(401).send({ errorMsg: "Hall Name already exists" });
+      return;
+    }
 
+    // Data with additional fields
+    const newHallData = {
+      ...mahalDetails,
+      cAt: new Date(),
+    };
 
-
+    // Insert the new hall data
+    const result = await collection.insertOne(newHallData);
+    res.status(200).json({
+      yourId: result.insertedId,
+      message: "Hall data added successfully",
+    });
+  } catch (error) {
+    console.error("Error adding hall data:", error);
+    res.status(500).send("Internal server error");
+  }
+});
 
 module.exports = app;

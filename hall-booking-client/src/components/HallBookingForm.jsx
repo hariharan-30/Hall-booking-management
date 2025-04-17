@@ -97,15 +97,16 @@ const schemavalidation = yup
 // Add Hall Item
 const addHallItem = async (data) => {
   try {
-    const token = Cookies.get("jwt_token");
+    const token = Cookies.get("jwt_token")
+    console.log('token', token)
     const response = await axios.post("http://localhost:5004/hall", data, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     });
     return response.data;
-  } catch {
+  } catch (error) {
     console.error("Add item request failed:", error);
     throw new Error("Failed to post item");
   }
@@ -115,7 +116,8 @@ const getHallItem = async () => {
   try {
     const response = await axios.get("http://localhost:5004/hall");
     return response.data;
-  } catch {
+  } catch (error) {
+    console.error("get item request failed:", error);
     throw new Error("Failed to get item");
   }
 };
@@ -134,7 +136,7 @@ const updateHallItem = async (data) => {
       }
     );
     return response.data;
-  } catch {
+  } catch (error) {
     console.error(
       "Error updating hall item:",
       error.response?.data || error.message
