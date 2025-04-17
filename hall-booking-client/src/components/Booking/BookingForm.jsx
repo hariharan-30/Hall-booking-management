@@ -40,7 +40,7 @@ const payType = ["UPI", "NEFT"];
 // Fetch available hall names from API
 const getHallName = async () => {
   try {
-    const response = await axios.get("http://localhost:5004/hall");
+    const response = await axios.get("http://localhost:8000/hall");
     return response.data;
   } catch (error) {
     console.error(
@@ -55,7 +55,7 @@ const getHallName = async () => {
 const postBookingItem = async (data) => {
   try {
     const token = Cookies.get("jwt_token");
-    const response = await axios.post("http://localhost:5004/booking", data, {
+    const response = await axios.post("http://localhost:8000/booking", data, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ const updateBookingItem = async (data) => {
   try {
     const token = Cookies.get("jwt_token");
     const response = await axios.put(
-      `http://localhost:5004/booking/${data._id}`,
+      `http://localhost:8000/booking/${data._id}`,
       data,
       {
         headers: {
@@ -98,7 +98,7 @@ const updateBookingItem = async (data) => {
 // Delete a booking item by ID using the API
 const deleteBookingItem = async (id) => {
   try {
-    const response = await axios.delete(`http://localhost:5004/booking/${id}`);
+    const response = await axios.delete(`http://localhost:8000/booking/${id}`);
     return response.data;
   } catch (error) {
     throw new Error("Failed to delete item");
@@ -108,7 +108,7 @@ const deleteBookingItem = async (id) => {
 const getFilterItems = async (page, limit) => {
   try {
     const response = await axios.get(
-      "http://localhost:5004/api/filteredItems",
+      "http://localhost:8000/api/filteredItems",
       {
         params: { page, limit },
       }
@@ -319,7 +319,7 @@ const BookingForm = () => {
     : null;
 
   const specificItem = async (id) => {
-    const response = await axios.get(`http://localhost:5004/booking/${id}`);
+    const response = await axios.get(`http://localhost:8000/booking/${id}`);
     const {
       date,
       hallName,

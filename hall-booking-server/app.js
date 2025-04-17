@@ -288,7 +288,7 @@ app.put(
       const collection = client.db("partyHalls").collection("halls");
       const { hallItemId } = req.params;
       const hallItemDetails = req.body;
-      const { hallName, features, capacity, size, addnlFeatures } =
+      const { hallName, features, capacity, size, pricePerDay, pricePerHour, addnlFeatures } =
         hallItemDetails;
       const updateQuery = {
         $set: {
@@ -299,6 +299,8 @@ app.put(
           features,
           capacity,
           size,
+          pricePerDay,
+          pricePerHour,
           addnlFeatures,
         },
       };

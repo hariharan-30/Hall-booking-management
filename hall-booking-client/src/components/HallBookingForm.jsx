@@ -97,13 +97,13 @@ const schemavalidation = yup
 // Add Hall Item
 const addHallItem = async (data) => {
   try {
-    const token = Cookies.get("jwt_token")
-    console.log('token', token)
-    const response = await axios.post("http://localhost:5004/hall", data, {
+    const token = Cookies.get("jwt_token");
+    console.log("token", token);
+    const response = await axios.post("http://localhost:8000/hall", data, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     return response.data;
   } catch (error) {
@@ -114,7 +114,7 @@ const addHallItem = async (data) => {
 
 const getHallItem = async () => {
   try {
-    const response = await axios.get("http://localhost:5004/hall");
+    const response = await axios.get("http://localhost:8000/hall");
     return response.data;
   } catch (error) {
     console.error("get item request failed:", error);
@@ -125,16 +125,12 @@ const getHallItem = async () => {
 const updateHallItem = async (data) => {
   try {
     const token = Cookies.get("jwt_token");
-    const response = await axios.put(
-      `http://localhost:5004/hall/${data._id}`,
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.put(`http://localhost:8000/hall/${data._id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error(
@@ -147,7 +143,7 @@ const updateHallItem = async (data) => {
 
 const deleteReportItem = async (id) => {
   try {
-    const response = await axios.delete(`http://localhost:5004/hall/${id}`);
+    const response = await axios.delete(`http://localhost:8000/hall/${id}`);
     return response.data;
   } catch (error) {
     console.error(
@@ -246,7 +242,7 @@ export const HallBookingForm = () => {
   const deletePending = deleteReport.isPending ? deleteReport.variables : null;
 
   const specificItem = async (id) => {
-    const response = await axios.get(`http://localhost:5004/hall/${id}`);
+    const response = await axios.get(`http://localhost:8000/hall/${id}`);
     const {
       hallName,
       features,
@@ -273,6 +269,7 @@ export const HallBookingForm = () => {
       ...formData,
       addnlFeatures,
     };
+    console.log('updating combineData',combineData)
 
     if (editingId) {
       updateHallData.mutateAsync({ _id: editingId, ...combineData });

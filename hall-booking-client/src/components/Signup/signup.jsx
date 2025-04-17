@@ -20,7 +20,7 @@ const schemaValidation = yup.object().shape({
 // Create User API
 
 const createUser = async (data) => {
-  const response = await axios.post("http://localhost:5004/signup", data);
+  const response = await axios.post("http://localhost:8000/signup", data);
   return response.data;
 };
 

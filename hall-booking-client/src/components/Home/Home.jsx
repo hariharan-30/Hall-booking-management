@@ -40,7 +40,7 @@
 // };
 
 // const getDates = async () => {
-//   const response = await axios.get("http://localhost:5004/booking");
+//   const response = await axios.get("http://localhost:8000/booking");
 //   return response.data;
 // };
 
@@ -249,7 +249,7 @@
 // };
 
 // const getDates = async () => {
-//   const response = await axios.get("http://localhost:5004/booking");
+//   const response = await axios.get("http://localhost:8000/booking");
 //   return response.data;
 // };
 
@@ -466,7 +466,7 @@ const getFirstDayOfMonth = (year, month) => {
 const getDates = async () => {
   try {
     const token = Cookies.get("jwt_token");
-    const response = await axios.get("http://localhost:5004/booking", {
+    const response = await axios.get("http://localhost:8000/booking", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
